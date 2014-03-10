@@ -41,7 +41,6 @@ class Dispatch_Routing {
    */
   static function on_load() {
     if ( ! is_admin() ) {
-      add_action( 'dispatch_register_routing', array( __CLASS__, '_dispatch_register_routing_11' ), 11 );
       add_action( 'wp_loaded', array( __CLASS__, '_wp_loaded' ) );
       add_filter( 'do_parse_request', array( __CLASS__, '_do_parse_request' ), 10, 3 );
       Dispatch::register_helper( __CLASS__ );
@@ -108,20 +107,6 @@ class Dispatch_Routing {
   }
 
   /**
-   *
-   */
-  static function _dispatch_register_routing_11() {
-    /*
-     * Fixup URL vars to pull Post Type from Class Name if available.
-     */
-    self::$_url_vars = self::_set_post_types( self::$_url_vars );
-    /*
-     * Fixup URL routes to pull Post Type from Class Name if available.
-     */
-    self::$_url_routes = self::_set_post_types( self::$_url_routes );
-  }
-
-  /**
    * Fixup $args to pull Post Type from Class Name, if available.
    *
    * @param $args
@@ -159,6 +144,15 @@ class Dispatch_Routing {
    */
   static function _wp_loaded() {
     do_action( 'dispatch_register_routing' );
+    /*
+     * Fixup URL vars to pull Post Type from Class Name if available.
+     */
+    self::$_url_vars = self::_set_post_types( self::$_url_vars );
+    /*
+     * Fixup URL routes to pull Post Type from Class Name if available.
+     */
+    self::$_url_routes = self::_set_post_types( self::$_url_routes );
+
   }
 
   /**
@@ -230,10 +224,17 @@ class Dispatch_Routing {
   }
 
   /**
-   * @return object
+   * @return Dispatch_Request
    */
   static function matched_request() {
     return self::$_matched_request;
+  }
+
+  /**
+   * @return Dispatch_Branch
+   */
+  static function matched_branch() {
+    return self::$_matched_branch;
   }
 
   /**
