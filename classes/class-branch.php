@@ -56,25 +56,25 @@ class Dispatch_Branch extends Dispatch_Base {
    */
   function match_request( $request ) {
     $matched = false;
-    if ( empty( $this->args['callback'] ) ) {
+    if ( empty( $this->args['matcher'] ) ) {
       /**
-       * If not callback, try the default approachs.
+       * If no matcher, try the default approachs.
        */
       if ( ! empty( $request->args['post_types'] ) ) {
-        $matched = $this->match_post_type( $request );
+        $matched = $this->try_post_type( $request );
       }
-    } else if ( is_callable( $this->args['callback'] ) ) {
+    } else if ( is_callable( $this->args['matcher'] ) ) {
       /**
-       * If callback, use it.
+       * If matcher, use it.
        */
-      $matched = $this->match_callback( $request );
+      $matched = $this->try_matcher( $request );
     } else {
       /*
        * ...Houston, we have a problem.
        */
-      if ( is_string( $this->args['callback'] ) ) {
+      if ( is_string( $this->args['matcher'] ) ) {
         $message = __( 'ERROR: Callback %s for template %s is not a callable.', 'dispatch' );
-        trigger_error( sprintf( $message, $this->args['callback'], $this->template ) );
+        trigger_error( sprintf( $message, $this->args['matcher'], $this->template ) );
       } else {
         $message = __( 'ERROR: Callback for template %s is not a callable.', 'dispatch' );
         trigger_error( sprintf( $message, $this->template ) );
@@ -88,20 +88,20 @@ class Dispatch_Branch extends Dispatch_Base {
   }
 
   /**
-   * @param object $request
+   * @param Dispatch_Request $request
    *
    * @return bool
    */
-  function match_callback( $request ) {
-    return call_user_func( $this->args['callback'], $request, $this );
+  function try_matcher( $request ) {
+    return call_user_func( $this->args['matcher'], $request, $this );
   }
 
   /**
-   * @param object $branch
+   * @param Dispatch_Branch $branch
    *
    * @return bool|WP_Query
    */
-  function match_post_type( $branch ) {
+  function try_post_type( $branch ) {
     $query = new WP_Query( array(
       'post_status' => 'publish',
       'post_type' => $branch->args['post_types'],
