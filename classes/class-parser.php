@@ -84,7 +84,7 @@ class Dispatch_Parser {
       $segment_args = array();
     }
     $template = implode( '/', $segments );
-    if ( $this->has_template_branches( $count, $template ) ) {
+    if ( $this->_has_template_branches( $count, $template ) ) {
       $branches = $this->_merge_template_branches( $count, $template, $branches );
     }
     $branch->children = $branches;
@@ -96,7 +96,7 @@ class Dispatch_Parser {
       $segment_args = array_merge( (array)Dispatch::get_url_var( $segment ), $segment_args );
     }
     $branch->args = $segment_args;
-    $this->add_template_branches( $count, $template, $branch );
+    $this->_add_template_branches( $count, $template, $branch );
     return $branch;
   }
 
@@ -124,7 +124,7 @@ class Dispatch_Parser {
    *
    * @return bool
    */
-  function has_template_branches( $count, $template ) {
+  private function _has_template_branches( $count, $template ) {
     return isset( $this->_segment_counts[$count][$template] );
   }
 
@@ -133,7 +133,7 @@ class Dispatch_Parser {
    * @param $template
    * @param $branch
    */
-  function add_template_branches( $count, $template, $branch ) {
+  private function _add_template_branches( $count, $template, $branch ) {
     $this->_segment_counts[$count][$template] = $branch;
   }
   /**
