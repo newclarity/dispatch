@@ -11,21 +11,6 @@ class Dispatch_Branch extends Dispatch_Base {
   var $template;
 
   /**
-   * @var array Array of URL template segments
-   */
-  var $template_segments;
-
-  /**
-   * @var string The right most segment of the $template
-   */
-  var $last_template_segment;
-
-  /**
-   * @var int The number of segments for this branch's $template
-   */
-  var $count;
-
-  /**
    * @var Dispatch_Branch The parent Branch for this Branch
    */
   var $parent;
@@ -44,6 +29,42 @@ class Dispatch_Branch extends Dispatch_Base {
    * @var Dispatch_Request
    */
   var $matched_request;
+
+  /**
+   * @var array Array of URL template segments
+   */
+  private $_template_segments = false;
+
+  /**
+   * @var string The right most segment of the $template
+   */
+  private $_last_template_segment = false;
+
+
+  function __construct( $template, $args ) {
+    $this->template = $template;
+    $this->last_template_segment =
+    parent::__construct( $args );
+  }
+
+  function template_segments() {
+    if ( ! $this->_template_segments ) {
+      $this->_template_segments = explode( '/', rtrim( $template, '/' ) );
+    }
+    return $this->_template_segments;
+  }
+
+  function set_template_segments( $segment ) {
+    $this->_template_segments = $segment;
+  }
+
+  function last_template_segment() {
+    if ( ! $this->_last_template_segment ) {
+      $this->_last_template_segment = end( $this->template_segments() );
+    }
+    return $this->_last_template_segment;
+  }
+
 
   /**
    * @param object $request
